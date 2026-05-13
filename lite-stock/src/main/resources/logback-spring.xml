@@ -24,7 +24,7 @@
   <appender name="logstash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
     <destination>${logstash_destination}</destination>
     <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-      <customFields>{ "app_name" : "hell", "server_name" : "${CONTEXT_NAME}", "type" : "logback", "env":"${env}" }
+      <customFields>{ "app_name" : "list-stock", "server_name" : "${CONTEXT_NAME}", "type" : "logback", "env":"${env}" }
       </customFields>
     </encoder>
   </appender>
