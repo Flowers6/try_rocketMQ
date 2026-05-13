@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false">
+
+  <property name="CONTEXT_NAME" value="lite-stock"/>
+  <!--  通过yml获取-->
+  <springProperty scope="context" name="env" source="spring.profiles.active"/>
+  <springProperty scope="context" name="logstash_destination" source="logstash.destination"/>
+
+  <conversionRule conversionWord="colorful"
+    class="com.chance.litestock.config.logback.LogbackColorful"/>
+
+  <property name="PATTERN"
+    value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] traceId:[%X{traceId}] [%-5level] [%logger{0}:%line]: %msg%n"/>
+
+  <!-- 控制台输出 -->
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %black([%thread]) traceId:[%X{traceId}] %colorful([%-5level]) %boldCyan([%logger{0}:%line]): %msg%n</pattern>
+      <charset>UTF-8</charset>
+    </encoder>
+  </appender>
+
+  <!--logstash 输出-->
+  <appender name="logstash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+    <destination>${logstash_destination}</destination>
+    <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+      <customFields>{ "app_name" : "hell", "server_name" : "${CONTEXT_NAME}", "type" : "logback", "env":"${env}" }
+      </customFields>
+    </encoder>
+  </appender>
+
+  <!-- 开发环境 -->
+  <springProfile name="dev">
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+      <!-- 按照日期 -->
+      <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+        <fileNamePattern>log/${CONTEXT_NAME}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+        　　　　　　　
+        <maxHistory>30</maxHistory>
+        <totalSizeCap>1GB</totalSizeCap>
+        <MaxFileSize>5MB</MaxFileSize>
+      </rollingPolicy>
+      <encoder>
+        <pattern>${PATTERN}</pattern>
+        <charset>UTF-8</charset>
+      </encoder>
+    </appender>
+
+    <logger name="com.chance.hell" level="DEBUG"/>
+
+    <!-- 不同包的配置 -->
+    <root level="INFO">
+      <appender-ref ref="CONSOLE"/>
+      <appender-ref ref="FILE"/>
+    </root>
+  </springProfile>
+
+  <!-- 开发环境 -->
+  <springProfile name="devtest">
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+      <!-- 按照日期 -->
+      <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+        <fileNamePattern>log/${CONTEXT_NAME}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+        　　　　　　　
+        <maxHistory>30</maxHistory>
+        <totalSizeCap>1GB</totalSizeCap>
+        <MaxFileSize>5MB</MaxFileSize>
+      </rollingPolicy>
+      <encoder>
+        <pattern>${PATTERN}</pattern>
+        <charset>UTF-8</charset>
+      </encoder>
+    </appender>
+
+    <logger name="com.chance.hell" level="DEBUG"/>
+
+    <!-- 不同包的配置 -->
+    <root level="INFO">
+      <appender-ref ref="CONSOLE"/>
+      <appender-ref ref="FILE"/>
+      <!--      <appender-ref ref="logstash"/>-->
+
+    </root>
+  </springProfile>
+
+  <springProfile name="test">
+
+    <appender name="FILE_INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+      <!-- 按照日期 -->
+      <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+        <fileNamePattern>log/${CONTEXT_NAME}.info.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+        　　　　　　　
+        <maxHistory>30</maxHistory>
+        <totalSizeCap>1GB</totalSizeCap>
+        <MaxFileSize>5MB</MaxFileSize>
+      </rollingPolicy>
+      <encoder>
+        <pattern>${PATTERN}</pattern>
+        <charset>UTF-8</charset>
+      </encoder>
+      <filter class="ch.qos.logback.classic.filter.LevelFilter">
+        <level>info</level>
+        <onMatch>ACCEPT</onMatch>
+        <onMismatch>DENY</onMismatch>
+      </filter>
+    </appender>
+    <appender name="FILE_WARN" class="ch.qos.logback.core.rolling.RollingFileAppender">
+      <!-- 按照日期 -->
+      <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+        <fileNamePattern>log/${CONTEXT_NAME}.warn.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+        　　　　　　　
+        <maxHistory>30</maxHistory>
+        <totalSizeCap>1GB</totalSizeCap>
+        <MaxFileSize>5MB</MaxFileSize>
+      </rollingPolicy>
+      <encoder>
+        <pattern>${PATTERN}</pattern>
+        <charset>UTF-8</charset>
+      </encoder>
+      <filter class="ch.qos.logback.classic.filter.LevelFilter">
+        <level>warn</level>
+        <onMatch>ACCEPT</onMatch>
+        <onMismatch>DENY</onMismatch>
+      </filter>
+    </appender>
+    <appender name="FILE_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+      <!-- 按照日期 -->
+      <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+        <fileNamePattern>log/${CONTEXT_NAME}.error.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+        　　　　　　　
+        <maxHistory>30</maxHistory>
+        <totalSizeCap>1GB</totalSizeCap>
+        <MaxFileSize>5MB</MaxFileSize>
+      </rollingPolicy>
+      <encoder>
+        <pattern>${PATTERN}</pattern>
+        <charset>UTF-8</charset>
+      </encoder>
+      <filter class="ch.qos.logback.classic.filter.LevelFilter">
+        <level>error</level>
+        <onMatch>ACCEPT</onMatch>
+        <onMismatch>DENY</onMismatch>
+      </filter>
+    </appender>
+
+    <logger name="com.chance.hell" level="DEBUG"/>
+
+    <root level="INFO">
+      <appender-ref ref="CONSOLE"/>
+      <appender-ref ref="FILE_INFO"/>
+      <appender-ref ref="FILE_WARN"/>
+      <appender-ref ref="FILE_ERROR"/>
+      <appender-ref ref="logstash"/>
+    </root>
+  </springProfile>
+
+  <!-- 预线上环境 -->
+  <springProfile name="pre">
+
+    <appender name="FILE_INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+      <!-- 按照日期 -->
+      <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+        <fileNamePattern>log/${CONTEXT_NAME}.info.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+        　　　　　　　
+        <maxHistory>30</maxHistory>
+        <totalSizeCap>1GB</totalSizeCap>
+        <MaxFileSize>5MB</MaxFileSize>
+      </rollingPolicy>
+      <encoder>
+        <pattern>${PATTERN}</pattern>
+        <charset>UTF-8</charset>
+      </encoder>
+      <filter class="ch.qos.logback.classic.filter.LevelFilter">
+        <level>info</level>
+        <onMatch>ACCEPT</onMatch>
+        <onMismatch>DENY</onMismatch>
+      </filter>
+    </appender>
+    <appender name="FILE_WARN" class="ch.qos.logback.core.rolling.RollingFileAppender">
+      <!-- 按照日期 -->
+      <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+        <fileNamePattern>log/${CONTEXT_NAME}.warn.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+        　　　　　　　
+        <maxHistory>30</maxHistory>
+        <totalSizeCap>1GB</totalSizeCap>
+        <MaxFileSize>5MB</MaxFileSize>
+      </rollingPolicy>
+      <encoder>
+        <pattern>${PATTERN}</pattern>
+        <charset>UTF-8</charset>
+      </encoder>
+      <filter class="ch.qos.logback.classic.filter.LevelFilter">
+        <level>warn</level>
+        <onMatch>ACCEPT</onMatch>
+        <onMismatch>DENY</onMismatch>
+      </filter>
+    </appender>
+    <appender name="FILE_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+      <!-- 按照日期 -->
+      <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+        <fileNamePattern>log/${CONTEXT_NAME}.error.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+        　　　　　　　
+        <maxHistory>30</maxHistory>
+        <totalSizeCap>1GB</totalSizeCap>
+        <MaxFileSize>5MB</MaxFileSize>
+      </rollingPolicy>
+      <encoder>
+        <pattern>${PATTERN}</pattern>
+        <charset>UTF-8</charset>
+      </encoder>
+      <filter class="ch.qos.logback.classic.filter.LevelFilter">
+        <level>error</level>
+        <onMatch>ACCEPT</onMatch>
+        <onMismatch>DENY</onMismatch>
+      </filter>
+    </appender>
+
+    <logger name="com.chance.hell" level="DEBUG"/>
+
+        <root level="INFO">
+          <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE_INFO" />
+            <appender-ref ref="FILE_WARN" />
+            <appender-ref ref="FILE_ERROR" />
+          <appender-ref ref="logstash" />
+        </root>
+  </springProfile>
+
+  <!-- 线上环境 -->
+  <springProfile name="pro">
+
+    <appender name="FILE_INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+      <!-- 按照日期 -->
+      <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+        <fileNamePattern>log/${CONTEXT_NAME}.info.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+        　　　　　　　
+        <maxHistory>30</maxHistory>
+        <totalSizeCap>1GB</totalSizeCap>
+        <MaxFileSize>5MB</MaxFileSize>
+      </rollingPolicy>
+      <encoder>
+        <pattern>${PATTERN}</pattern>
+        <charset>UTF-8</charset>
+      </encoder>
+      <filter class="ch.qos.logback.classic.filter.LevelFilter">
+        <level>info</level>
+        <onMatch>ACCEPT</onMatch>
+        <onMismatch>DENY</onMismatch>
+      </filter>
+    </appender>
+    <appender name="FILE_WARN" class="ch.qos.logback.core.rolling.RollingFileAppender">
+      <!-- 按照日期 -->
+      <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+        <fileNamePattern>log/${CONTEXT_NAME}.warn.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+        　　　　　　　
+        <maxHistory>30</maxHistory>
+        <totalSizeCap>1GB</totalSizeCap>
+        <MaxFileSize>5MB</MaxFileSize>
+      </rollingPolicy>
+      <encoder>
+        <pattern>${PATTERN}</pattern>
+        <charset>UTF-8</charset>
+      </encoder>
+      <filter class="ch.qos.logback.classic.filter.LevelFilter">
+        <level>warn</level>
+        <onMatch>ACCEPT</onMatch>
+        <onMismatch>DENY</onMismatch>
+      </filter>
+    </appender>
+    <appender name="FILE_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+      <!-- 按照日期 -->
+      <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+        <fileNamePattern>log/${CONTEXT_NAME}.error.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+        　　　　　　　
+        <maxHistory>30</maxHistory>
+        <totalSizeCap>1GB</totalSizeCap>
+        <MaxFileSize>5MB</MaxFileSize>
+      </rollingPolicy>
+      <encoder>
+        <pattern>${PATTERN}</pattern>
+        <charset>UTF-8</charset>
+      </encoder>
+      <filter class="ch.qos.logback.classic.filter.LevelFilter">
+        <level>error</level>
+        <onMatch>ACCEPT</onMatch>
+        <onMismatch>DENY</onMismatch>
+      </filter>
+    </appender>
+
+    <logger name="com.chance.hell" level="DEBUG"/>
+
+    <root level="INFO">
+      <appender-ref ref="CONSOLE"/>
+      <appender-ref ref="FILE_INFO"/>
+      <appender-ref ref="FILE_WARN"/>
+      <appender-ref ref="FILE_ERROR"/>
+      <appender-ref ref="logstash"/>
+    </root>
+  </springProfile>
+</configuration>

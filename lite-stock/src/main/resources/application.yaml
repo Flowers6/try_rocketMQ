@@ -1,0 +1,53 @@
+logging:
+  level:
+    root: INFO
+
+debug: false
+
+spring:
+  application:
+    name: lite-stock
+  profiles:
+    active: @active@
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${MYSQL_HOST}$:${MYSQL_PORT}$/liststock?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false
+    username: ${MYSQL_USER}
+    password: ${MYSQL_PASSWORD}
+    type: com.alibaba.druid.pool.DruidDataSource
+
+server:
+  servlet:
+    context-path: /lite-stock
+  port: 4493
+  error:
+    include-message: always
+    include-binding-errors: always
+
+# springdoc-openapi项目配置
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  group-configs:
+    - group: "lite-stock"
+      paths-to-match:
+        - "/**"
+      packages-to-scan:
+        - com.chance.litestock.controller
+# knife4j的增强配置，不需要增强可以不配
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+    enable-debug: true
+    enable-swagger-models: true
+
+# ELK ELASTIC SEARCH LOGSTASH KIBANA
+logstash:
+  destination: ${ELK_HOST}:${ELK_PORT}
