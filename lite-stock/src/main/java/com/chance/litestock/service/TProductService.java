@@ -12,9 +12,9 @@ public interface TProductService extends IService<TProduct> {
 
     TProduct querySingleProduct(String productName);
 
-    void freezeProduct(String productName, Integer amount);
+    void freezeProduct(String productName, Integer amount, Long orderId);
 
-    void unfreezeProduct(String productName, Integer amount);
+    void unfreezeProduct(String productName, Integer amount, Long orderId);
 
-    void deductProduct(String productName, Integer amount);
+    void deductProduct(String productName, Integer amount, Long orderId);
 }

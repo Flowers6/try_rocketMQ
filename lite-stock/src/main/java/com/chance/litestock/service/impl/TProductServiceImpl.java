@@ -3,9 +3,11 @@ package com.chance.litestock.service.impl;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.chance.litestock.domain.dao.TProduct;
-import com.chance.litestock.mapper.TInventoryRecordMapper;
+import com.chance.litestock.enums.OperateTypeEnum;
 import com.chance.litestock.service.TProductService;
 import com.chance.litestock.mapper.TProductMapper;
+import com.chance.litestock.service.inventory.InventoryOperationProxy;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 /**
@@ -14,14 +16,11 @@ import org.springframework.stereotype.Service;
 * @createDate 2026-05-13 20:37:04
 */
 @Service
+@RequiredArgsConstructor
 public class TProductServiceImpl extends ServiceImpl<TProductMapper, TProduct>
     implements TProductService{
 
-    private final TInventoryRecordMapper tInventoryRecordMapper;
-
-    public TProductServiceImpl(TInventoryRecordMapper tInventoryRecordMapper) {
-        this.tInventoryRecordMapper = tInventoryRecordMapper;
-    }
+    private final InventoryOperationProxy inventoryOperationProxy;
 
     @Override
     public TProduct querySingleProduct(String productName) {
@@ -29,26 +28,18 @@ public class TProductServiceImpl extends ServiceImpl<TProductMapper, TProduct>
     }
 
     @Override
-    public void freezeProduct(String productName, Integer amount) {
-        baseMapper.update(Wrappers.lambdaUpdate(TProduct.class)
-                .eq(TProduct::getProductName, productName)
-                .setIncrBy(TProduct::getFrozenStock, amount)
-                .setDecrBy(TProduct::getAvailableStock, amount));
+    public void freezeProduct(String productName, Integer amount, Long orderId) {
+        inventoryOperationProxy.execute(productName, amount, orderId, OperateTypeEnum.FREEZE);
     }
 
     @Override
-    public void unfreezeProduct(String productName, Integer amount) {
-        baseMapper.update(Wrappers.lambdaUpdate(TProduct.class)
-                .eq(TProduct::getProductName, productName)
-                .setDecrBy(TProduct::getFrozenStock, amount)
-                .setIncrBy(TProduct::getAvailableStock, amount));
+    public void unfreezeProduct(String productName, Integer amount, Long orderId) {
+        inventoryOperationProxy.execute(productName, amount, orderId, OperateTypeEnum.RELEASE);
     }
 
     @Override
-    public void deductProduct(String productName, Integer amount) {
-        baseMapper.update(Wrappers.lambdaUpdate(TProduct.class)
-                .eq(TProduct::getProductName, productName)
-                .setDecrBy(TProduct::getFrozenStock, amount));
+    public void deductProduct(String productName, Integer amount, Long orderId) {
+        inventoryOperationProxy.execute(productName, amount, orderId, OperateTypeEnum.DEDUCT);
     }
 
 
