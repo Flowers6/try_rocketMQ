@@ -28,28 +28,28 @@
 
 ## 项目初始化
 
-- [ ] 创建 SpringBoot 项目
-- [ ] 引入 MyBatis-Plus
-- [ ] 引入 RocketMQ Starter
-- [ ] 配置 MySQL
-- [ ] 配置 RocketMQ NameServer
-- [ ] 配置日志
+- [x] 创建 SpringBoot 项目
+- [x] 引入 MyBatis-Plus
+- [x] 引入 RocketMQ Starter
+- [x] 配置 MySQL
+- [x] 配置 RocketMQ NameServer
+- [x] 配置日志
 
 ---
 
 ## 数据库初始化
 
-- [ ] 创建商品表 t_product
-- [ ] 创建订单表 t_order
-- [ ] 创建订单明细表 t_order_item
-- [ ] 创建库存流水表 t_inventory_record
+- [x] 创建商品表 t_product
+- [x] 创建订单表 t_order
+- [x] 创建订单明细表 t_order_item
+- [x] 创建库存流水表 t_inventory_record
 
 ---
 
 ## 初始化测试数据
 
-- [ ] 初始化商品数据
-- [ ] 准备测试库存
+- [x] 初始化商品数据
+- [x] 准备测试库存
 
 ---
 
@@ -59,8 +59,8 @@
 
 实现字段：
 
-- [ ] available_stock
-- [ ] frozen_stock
+- [x] available_stock
+- [x] frozen_stock
 
 ---
 
@@ -68,16 +68,16 @@
 
 实现：
 
-- [ ] 冻结库存
-- [ ] 释放库存
-- [ ] 正式扣减库存
+- [x] 冻结库存
+- [x] 释放库存
+- [x] 正式扣减库存
 
 ---
 
 ## 库存 SQL 安全控制
 
-- [ ] 防止库存扣成负数
-- [ ] 使用条件更新控制库存
+- [x] 防止库存扣成负数
+- [x] 使用条件更新控制库存
 
 示例：
 

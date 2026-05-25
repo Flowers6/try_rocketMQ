@@ -12,6 +12,7 @@ public enum OperateTypeEnum {
         public LambdaUpdateWrapper<TProduct> buildUpdateWrapper(String productName, Integer amount) {
             return new LambdaUpdateWrapper<TProduct>()
                     .eq(TProduct::getProductName, productName)
+                    .gt(TProduct::getAvailableStock, amount)
                     .setIncrBy(TProduct::getFrozenStock, amount)
                     .setDecrBy(TProduct::getAvailableStock, amount);
         }
@@ -22,6 +23,7 @@ public enum OperateTypeEnum {
         public LambdaUpdateWrapper<TProduct> buildUpdateWrapper(String productName, Integer amount) {
             return new LambdaUpdateWrapper<TProduct>()
                     .eq(TProduct::getProductName, productName)
+                    .gt(TProduct::getFrozenStock, amount)
                     .setDecrBy(TProduct::getFrozenStock, amount)
                     .setIncrBy(TProduct::getAvailableStock, amount);
         }
@@ -32,6 +34,7 @@ public enum OperateTypeEnum {
         public LambdaUpdateWrapper<TProduct> buildUpdateWrapper(String productName, Integer amount) {
             return new LambdaUpdateWrapper<TProduct>()
                     .eq(TProduct::getProductName, productName)
+                    .gt(TProduct::getFrozenStock, amount)
                     .setDecrBy(TProduct::getFrozenStock, amount);
         }
     };
