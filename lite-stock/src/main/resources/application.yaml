@@ -51,3 +51,7 @@ knife4j:
 # ELK ELASTIC SEARCH LOGSTASH KIBANA
 logstash:
   destination: ${ELK_HOST}:${ELK_PORT}
+
+rocket-mq:
+  producer:
+    endpoints: ${ROCKET_MQ_NAMESERVER}

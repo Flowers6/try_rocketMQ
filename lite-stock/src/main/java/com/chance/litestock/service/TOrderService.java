@@ -11,7 +11,15 @@ import com.chance.litestock.domain.dto.CreateOrder;
 */
 public interface TOrderService extends IService<TOrder> {
 
+    /**
+     * 创建订单
+     * @param createOrder 创建订单参数
+     */
     void createOrder(CreateOrder createOrder);
 
+    /**
+     * 支付订单
+     * @param orderId 订单ID
+     */
     void pay(Long orderId);
 }
