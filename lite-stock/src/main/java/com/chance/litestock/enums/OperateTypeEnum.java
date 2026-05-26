@@ -9,9 +9,9 @@ public enum OperateTypeEnum {
 
     FREEZE("冻结库存") {
         @Override
-        public LambdaUpdateWrapper<TProduct> buildUpdateWrapper(String productName, Integer amount) {
+        public LambdaUpdateWrapper<TProduct> buildUpdateWrapper(Long productId, Integer amount) {
             return new LambdaUpdateWrapper<TProduct>()
-                    .eq(TProduct::getProductName, productName)
+                    .eq(TProduct::getId, productId)
                     .gt(TProduct::getAvailableStock, amount)
                     .setIncrBy(TProduct::getFrozenStock, amount)
                     .setDecrBy(TProduct::getAvailableStock, amount);
@@ -20,9 +20,9 @@ public enum OperateTypeEnum {
 
     RELEASE("释放库存") {
         @Override
-        public LambdaUpdateWrapper<TProduct> buildUpdateWrapper(String productName, Integer amount) {
+        public LambdaUpdateWrapper<TProduct> buildUpdateWrapper(Long productId, Integer amount) {
             return new LambdaUpdateWrapper<TProduct>()
-                    .eq(TProduct::getProductName, productName)
+                    .eq(TProduct::getId, productId)
                     .gt(TProduct::getFrozenStock, amount)
                     .setDecrBy(TProduct::getFrozenStock, amount)
                     .setIncrBy(TProduct::getAvailableStock, amount);
@@ -31,9 +31,9 @@ public enum OperateTypeEnum {
 
     DEDUCT("正式扣减库存") {
         @Override
-        public LambdaUpdateWrapper<TProduct> buildUpdateWrapper(String productName, Integer amount) {
+        public LambdaUpdateWrapper<TProduct> buildUpdateWrapper(Long productId, Integer amount) {
             return new LambdaUpdateWrapper<TProduct>()
-                    .eq(TProduct::getProductName, productName)
+                    .eq(TProduct::getId, productId)
                     .gt(TProduct::getFrozenStock, amount)
                     .setDecrBy(TProduct::getFrozenStock, amount);
         }
@@ -45,6 +45,6 @@ public enum OperateTypeEnum {
         this.description = description;
     }
 
-    public abstract LambdaUpdateWrapper<TProduct> buildUpdateWrapper(String productName, Integer amount);
+    public abstract LambdaUpdateWrapper<TProduct> buildUpdateWrapper(Long productId, Integer amount);
 
 }

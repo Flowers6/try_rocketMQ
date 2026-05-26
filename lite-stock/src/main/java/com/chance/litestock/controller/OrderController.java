@@ -7,10 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,6 +21,13 @@ public class OrderController {
     @Operation(summary = "创建订单")
     public ResponseEntity<Result<Void>> create(@RequestBody CreateOrder createOrder) {
         tOrderService.createOrder(createOrder);
+        return Result.ok();
+    }
+
+    @GetMapping("pay/{orderId}")
+    @Operation(summary = "支付订单")
+    public ResponseEntity<Result<Void>> pay(@PathVariable Long orderId) {
+        tOrderService.pay(orderId);
         return Result.ok();
     }
 

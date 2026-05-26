@@ -5,11 +5,10 @@ import com.chance.litestock.domain.dao.TOrder;
 import com.chance.litestock.domain.dao.TOrderItem;
 import com.chance.litestock.domain.dto.CreateOrder;
 import com.chance.litestock.domain.dto.CreateOrderItem;
-import com.chance.litestock.enums.OperateTypeEnum;
 import com.chance.litestock.mapper.TOrderItemMapper;
 import com.chance.litestock.service.TOrderService;
 import com.chance.litestock.mapper.TOrderMapper;
-import com.chance.litestock.service.inventory.InventoryOperationProxy;
+import com.chance.litestock.service.TProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +28,7 @@ public class TOrderServiceImpl extends ServiceImpl<TOrderMapper, TOrder>
 
     private final TOrderItemMapper tOrderItemMapper;
 
-    private final InventoryOperationProxy inventoryOperationProxy;
+    private final TProductService tProductService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -43,14 +42,20 @@ public class TOrderServiceImpl extends ServiceImpl<TOrderMapper, TOrder>
         tOrderItemMapper.insert(tOrderItems);
 
         // 库存处理
-        createOrder.getItems().forEach(tOrderItem -> {
-            inventoryOperationProxy.execute(tOrderItem.getProductName(),
-                    tOrderItem.getQuantity(),
-                    tOrder.getId(),
-                    OperateTypeEnum.FREEZE);
+        tOrderItems.forEach(tOrderItem -> {
+            tProductService.freezeProduct(tOrderItem.getProductId(), tOrderItem.getQuantity(), tOrder.getId());
         });
 
         // TODO 发送延迟消息
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void pay(Long orderId) {
+        // 校验订单状态
+        // 修改订单状态
+        // 扣减冻结库存
+        // 记录库存流水
     }
 
     /**
