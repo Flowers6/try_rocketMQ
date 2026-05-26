@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.chance.litestock.enums.OrderStatusEnum;
@@ -52,4 +53,26 @@ public class TOrder {
      */
     @TableField(value = "update_time")
     private Date updateTime;
+
+    /**
+     * 创建订单
+     */
+    public void createOrder(BigDecimal totalAmount) {
+        this.generateOrderNo();
+        this.totalAmount = totalAmount;
+        orderStatus = OrderStatusEnum.WAIT_PAY;
+        createTime = new Date();
+    }
+
+    /**
+     * 生成订单号
+     * 规则：ORD + yyyyMMddHHmmss + 4位随机数
+     * 例如：ORD202605261430251234
+     */
+    public void generateOrderNo() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        String timestamp = sdf.format(new Date());
+        int randomNum = (int) (Math.random() * 9000) + 1000; // 生成1000-9999的随机数
+        this.orderNo = "ORD" + timestamp + randomNum;
+    }
 }

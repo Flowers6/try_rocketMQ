@@ -2,6 +2,7 @@ package com.chance.litestock.service;
 
 import com.chance.litestock.domain.dao.TOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.chance.litestock.domain.dto.CreateOrder;
 
 /**
 * @author 32166
@@ -10,4 +11,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface TOrderService extends IService<TOrder> {
 
+    void createOrder(CreateOrder createOrder);
 }

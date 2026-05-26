@@ -3,6 +3,7 @@ package com.chance.litestock.controller;
 import com.chance.litestock.domain.Result;
 import com.chance.litestock.domain.dao.TProduct;
 import com.chance.litestock.service.TProductService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,8 @@ public class ProductController {
     private final TProductService tProductService;
 
     @GetMapping("querySingleProduct/{productName}")
-    public ResponseEntity<Result<TProduct>> querySingleProduct(@PathVariable("productName") String productName) {
+    @Operation(summary = "查询单个商品")
+    public ResponseEntity<Result<TProduct>> querySingleProduct(@PathVariable String productName) {
         return Result.ok(tProductService.querySingleProduct(productName));
     }
 

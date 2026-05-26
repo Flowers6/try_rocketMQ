@@ -96,9 +96,9 @@ AND available_stock >= ?;
 
 实现：
 
-- [ ] WAIT_PAY
-- [ ] PAID
-- [ ] CLOSED
+- [x] WAIT_PAY
+- [x] PAID
+- [x] CLOSED
 
 ---
 
@@ -112,10 +112,10 @@ POST /order/create
 
 实现：
 
-- [ ] 创建订单
-- [ ] 创建订单明细
-- [ ] 冻结库存
-- [ ] 记录库存流水
+- [x] 创建订单
+- [x] 创建订单明细
+- [x] 冻结库存
+- [x] 记录库存流水
 - [ ] 发送 RocketMQ 延迟消息
 
 ---

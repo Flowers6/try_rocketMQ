@@ -43,4 +43,18 @@ public class TOrderItem {
      */
     @TableField(value = "create_time")
     private Date createTime;
+
+    /**
+     * 创建订单明细
+     *
+     * @param orderId   订单ID
+     * @param productId 商品ID
+     * @param quantity  购买数量
+     */
+    public void createOrderItem(Long orderId, Long productId, Integer quantity) {
+        this.orderId = orderId;
+        this.productId = productId;
+        this.quantity = quantity;
+        this.createTime = new Date();
+    }
 }
