@@ -12,4 +12,6 @@ import com.chance.litestock.domain.dto.CreateOrder;
 public interface TOrderService extends IService<TOrder> {
 
     void createOrder(CreateOrder createOrder);
+
+    void pay(Long orderId);
 }

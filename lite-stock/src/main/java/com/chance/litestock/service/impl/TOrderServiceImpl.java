@@ -1,15 +1,16 @@
 package com.chance.litestock.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.chance.litestock.domain.dao.TOrder;
 import com.chance.litestock.domain.dao.TOrderItem;
 import com.chance.litestock.domain.dto.CreateOrder;
 import com.chance.litestock.domain.dto.CreateOrderItem;
-import com.chance.litestock.enums.OperateTypeEnum;
+import com.chance.litestock.enums.OrderStatusEnum;
 import com.chance.litestock.mapper.TOrderItemMapper;
 import com.chance.litestock.service.TOrderService;
 import com.chance.litestock.mapper.TOrderMapper;
-import com.chance.litestock.service.inventory.InventoryOperationProxy;
+import com.chance.litestock.service.TProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +30,7 @@ public class TOrderServiceImpl extends ServiceImpl<TOrderMapper, TOrder>
 
     private final TOrderItemMapper tOrderItemMapper;
 
-    private final InventoryOperationProxy inventoryOperationProxy;
+    private final TProductService tProductService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -43,14 +44,46 @@ public class TOrderServiceImpl extends ServiceImpl<TOrderMapper, TOrder>
         tOrderItemMapper.insert(tOrderItems);
 
         // 库存处理
-        createOrder.getItems().forEach(tOrderItem -> {
-            inventoryOperationProxy.execute(tOrderItem.getProductName(),
-                    tOrderItem.getQuantity(),
-                    tOrder.getId(),
-                    OperateTypeEnum.FREEZE);
+        tOrderItems.forEach(tOrderItem -> {
+            tProductService.freezeProduct(tOrderItem.getProductId(), tOrderItem.getQuantity(), tOrder.getId());
         });
 
         // TODO 发送延迟消息
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void pay(Long orderId) {
+        // 校验订单状态
+        validatePayOrder(orderId);
+        // 修改订单状态
+        baseMapper.updateOrderStatus(orderId, OrderStatusEnum.PAID);
+        // 扣减冻结库存 记录库存流水
+        payOrderDeductStock(orderId);
+    }
+
+    /**
+     * 支付订单 扣减冻结库存
+     * @param orderId 订单ID
+     */
+    private void payOrderDeductStock(Long orderId) {
+        List<TOrderItem> tOrderItems = tOrderItemMapper.selectList(Wrappers
+                .lambdaQuery(TOrderItem.class)
+                .eq(TOrderItem::getOrderId, orderId));
+        tOrderItems.forEach(tOrderItem -> {
+            tProductService.deductProduct(tOrderItem.getProductId(), tOrderItem.getQuantity(), orderId);
+        });
+    }
+
+    /**
+     * 校验支付 订单状态
+     * @param orderId 订单ID
+     */
+    private void validatePayOrder(Long orderId) {
+        TOrder tOrder = baseMapper.selectById(orderId);
+        if (!OrderStatusEnum.WAIT_PAY.equals(tOrder.getOrderStatus())) {
+            throw new RuntimeException("订单状态异常");
+        }
     }
 
     /**
