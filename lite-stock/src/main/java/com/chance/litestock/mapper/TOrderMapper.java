@@ -21,7 +21,7 @@ public interface TOrderMapper extends BaseMapper<TOrder> {
      * @param orderStatusEnum 订单状态
      */
     @Update("update t_order set order_status = #{orderStatusEnum} where id = #{orderId} and order_status = 'WAIT_PAY'")
-    void updateOrderStatus(@Param("orderId") Long orderId, @Param("orderStatusEnum") OrderStatusEnum orderStatusEnum);
+    int updateOrderStatus(@Param("orderId") Long orderId, @Param("orderStatusEnum") OrderStatusEnum orderStatusEnum);
 }
 
 

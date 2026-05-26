@@ -5,6 +5,7 @@ import com.chance.litestock.domain.dao.TOrder;
 import com.chance.litestock.domain.dao.TOrderItem;
 import com.chance.litestock.domain.dto.OrderTimeoutMessage;
 import com.chance.litestock.enums.OrderStatusEnum;
+import com.chance.litestock.exception.BaseException;
 import com.chance.litestock.mapper.TOrderItemMapper;
 import com.chance.litestock.mapper.TOrderMapper;
 import com.chance.litestock.service.TProductService;
@@ -48,17 +49,25 @@ public class OrderTimeoutConsumer implements RocketMQListener {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ConsumeResult consume(MessageView messageView) {
-        // 解析消息
-        OrderTimeoutMessage message = parseMessage(messageView);
+        try {
+            // 解析消息
+            OrderTimeoutMessage message = parseMessage(messageView);
 
-        // 查询订单状态
-        validateOrderStatus(message.getOrderId());
+            // 查询订单状态
+            validateOrderStatus(message.getOrderId());
 
-        // 关闭订单
-        closeOrder(message.getOrderId());
+            // 关闭订单
+            closeOrder(message.getOrderId());
 
-        // 释放库存，记录库存流水
-        releaseStock(message.getOrderId());
+            // 释放库存，记录库存流水
+            releaseStock(message.getOrderId());
+        } catch (BaseException e) {
+            log.error("OrderTimeoutConsumer#consume业务异常无需重试", e);
+            return ConsumeResult.SUCCESS;
+        } catch (Exception e) {
+            log.error("OrderTimeoutConsumer#consume消费失败", e);
+            return ConsumeResult.FAILURE;
+        }
 
         return ConsumeResult.SUCCESS;
     }
@@ -86,13 +95,13 @@ public class OrderTimeoutConsumer implements RocketMQListener {
         TOrder order = tOrderMapper.selectById(orderId);
         if (order == null) {
             log.warn("订单不存在，orderId: {}", orderId);
-            throw new RuntimeException("订单不存在");
+            throw new BaseException("订单不存在");
         }
 
         if (!OrderStatusEnum.WAIT_PAY.equals(order.getOrderStatus())) {
             log.info("订单状态不是待支付状态，无需处理，orderId: {}, status: {}",
                     orderId, order.getOrderStatus());
-            throw new RuntimeException("订单状态异常，无需处理");
+            throw new BaseException("订单状态异常，无需处理");
         }
     }
 
@@ -101,7 +110,11 @@ public class OrderTimeoutConsumer implements RocketMQListener {
      * @param orderId 订单ID
      */
     private void closeOrder(Long orderId) {
-        tOrderMapper.updateOrderStatus(orderId, OrderStatusEnum.CLOSED);
+        int effectRow = tOrderMapper.updateOrderStatus(orderId, OrderStatusEnum.CLOSED);
+        if (effectRow <= 0) {
+            log.warn("订单状态更新失败，orderId: {}", orderId);
+            throw new BaseException("订单状态更新失败");
+        }
         log.info("订单已关闭，orderId: {}", orderId);
     }
 
@@ -116,7 +129,12 @@ public class OrderTimeoutConsumer implements RocketMQListener {
         );
 
         for (TOrderItem item : orderItems) {
-            tProductService.unfreezeProduct(item.getProductId(), item.getQuantity(), orderId);
+            int effectRow = tProductService.unfreezeProduct(item.getProductId(), item.getQuantity(), orderId);
+            if (effectRow <= 0) {
+                log.warn("释放库存失败，productId: {}, quantity: {}, orderId: {}",
+                        item.getProductId(), item.getQuantity(), orderId);
+                throw new BaseException("释放库存失败");
+            }
             log.info("释放库存成功，productId: {}, quantity: {}, orderId: {}",
                     item.getProductId(), item.getQuantity(), orderId);
         }

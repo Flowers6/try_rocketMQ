@@ -20,12 +20,12 @@ public class InventoryOperationProxy {
 
     private final TInventoryRecordMapper tInventoryRecordMapper;
 
-    public void execute(Long productId, Integer amount, Long orderId, OperateTypeEnum operateType) {
+    public int execute(Long productId, Integer amount, Long orderId, OperateTypeEnum operateType) {
         List<TProduct> tProducts = tProductMapper.selectList(
                 Wrappers.lambdaQuery(TProduct.class).eq(TProduct::getId, productId)
         );
 
-        tProductMapper.update(operateType.buildUpdateWrapper(productId, amount));
+        int effectRow = tProductMapper.update(operateType.buildUpdateWrapper(productId, amount));
 
         List<TInventoryRecord> records = tProducts.stream()
                 .filter(ObjectUtil::isNotNull)
@@ -41,5 +41,7 @@ public class InventoryOperationProxy {
         if (!records.isEmpty()) {
             tInventoryRecordMapper.insert(records);
         }
+
+        return effectRow;
     }
 }

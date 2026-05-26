@@ -10,11 +10,41 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface TProductService extends IService<TProduct> {
 
+    /**
+     * 查询单个商品
+     *
+     * @param productName 商品名称
+     * @return 商品
+     */
     TProduct querySingleProduct(String productName);
 
-    void freezeProduct(Long productId, Integer amount, Long orderId);
+    /**
+     * 冻结商品
+     *
+     * @param productId 商品ID
+     * @param amount    冻结数量
+     * @param orderId   订单ID
+     * @return 影响行数
+     */
+    int freezeProduct(Long productId, Integer amount, Long orderId);
 
-    void unfreezeProduct(Long productId, Integer amount, Long orderId);
+    /**
+     * 释放商品
+     *
+     * @param productId 商品ID
+     * @param amount    解冻数量
+     * @param orderId   订单ID
+     * @return 影响行数
+     */
+    int unfreezeProduct(Long productId, Integer amount, Long orderId);
 
-    void deductProduct(Long productId, Integer amount, Long orderId);
+    /**
+     * 扣减商品
+     *
+     * @param productId 商品ID
+     * @param amount    扣减数量
+     * @param orderId   订单ID
+     * @return 影响行数
+     */
+    int deductProduct(Long productId, Integer amount, Long orderId);
 }

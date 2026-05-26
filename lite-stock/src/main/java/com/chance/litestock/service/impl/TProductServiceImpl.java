@@ -28,18 +28,18 @@ public class TProductServiceImpl extends ServiceImpl<TProductMapper, TProduct>
     }
 
     @Override
-    public void freezeProduct(Long productId, Integer amount, Long orderId) {
-        inventoryOperationProxy.execute(productId, amount, orderId, OperateTypeEnum.FREEZE);
+    public int freezeProduct(Long productId, Integer amount, Long orderId) {
+        return inventoryOperationProxy.execute(productId, amount, orderId, OperateTypeEnum.FREEZE);
     }
 
     @Override
-    public void unfreezeProduct(Long productId, Integer amount, Long orderId) {
-        inventoryOperationProxy.execute(productId, amount, orderId, OperateTypeEnum.RELEASE);
+    public int unfreezeProduct(Long productId, Integer amount, Long orderId) {
+        return inventoryOperationProxy.execute(productId, amount, orderId, OperateTypeEnum.RELEASE);
     }
 
     @Override
-    public void deductProduct(Long productId, Integer amount, Long orderId) {
-        inventoryOperationProxy.execute(productId, amount, orderId, OperateTypeEnum.DEDUCT);
+    public int deductProduct(Long productId, Integer amount, Long orderId) {
+        return inventoryOperationProxy.execute(productId, amount, orderId, OperateTypeEnum.DEDUCT);
     }
 
 
