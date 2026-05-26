@@ -22,8 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static com.chance.litestock.consts.MQConst.ORDER_TIMEOUT_CONSUMER;
-import static com.chance.litestock.consts.MQConst.ORDER_TIMEOUT_TOPIC;
+import static com.chance.litestock.consts.MQConst.*;
 
 /**
  * @author : Flowers6
@@ -33,7 +32,7 @@ import static com.chance.litestock.consts.MQConst.ORDER_TIMEOUT_TOPIC;
  * @time : 15:58
  */
 @Component
-@RocketMQMessageListener(topic = ORDER_TIMEOUT_TOPIC, consumerGroup = ORDER_TIMEOUT_CONSUMER)
+@RocketMQMessageListener(topic = ORDER_TOPIC, consumerGroup = ORDER_TIMEOUT_CONSUMER, tag = ORDER_TIMEOUT_TAG)
 @Slf4j
 @RequiredArgsConstructor
 public class OrderTimeoutConsumer implements RocketMQListener {

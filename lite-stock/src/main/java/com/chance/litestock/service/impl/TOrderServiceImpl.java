@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import static com.chance.litestock.consts.MQConst.ORDER_TIMEOUT_DELAY;
-import static com.chance.litestock.consts.MQConst.ORDER_TIMEOUT_TOPIC;
+import static com.chance.litestock.consts.MQConst.ORDER_TOPIC;
 
 /**
 * @author 32166
@@ -71,7 +71,7 @@ public class TOrderServiceImpl extends ServiceImpl<TOrderMapper, TOrder>
      */
     private void sendCreateOrderMsg(Long orderId, String orderNo) {
         CompletableFuture<SendReceipt> sendFuture = new CompletableFuture<>();
-        rocketMQClientTemplate.asyncSendDelayMessage(ORDER_TIMEOUT_TOPIC,
+        rocketMQClientTemplate.asyncSendDelayMessage(ORDER_TOPIC,
                 MessageBuilder.withPayload(OrderTimeoutMessage.build(orderId, orderNo)),
                 Duration.ofMillis(ORDER_TIMEOUT_DELAY),
                 sendFuture);
