@@ -170,7 +170,7 @@ POST /order/pay/{orderId}
 
 实现：
 
-- [ ] 监听超时 Topic
+- [x] 监听超时 Topic
 - [ ] 查询订单状态
 - [ ] 自动关闭订单
 - [ ] 自动释放库存

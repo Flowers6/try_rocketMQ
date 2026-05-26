@@ -24,8 +24,8 @@ import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import static com.chance.litestock.consts.MQTopicConst.ORDER_TIMEOUT_DELAY;
-import static com.chance.litestock.consts.MQTopicConst.ORDER_TIMEOUT_TOPIC;
+import static com.chance.litestock.consts.MQConst.ORDER_TIMEOUT_DELAY;
+import static com.chance.litestock.consts.MQConst.ORDER_TIMEOUT_TOPIC;
 
 /**
 * @author 32166
