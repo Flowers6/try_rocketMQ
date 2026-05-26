@@ -52,6 +52,8 @@ knife4j:
 logstash:
   destination: ${ELK_HOST}:${ELK_PORT}
 
-rocket-mq:
+rocketmq:
   producer:
+    endpoints: ${ROCKET_MQ_NAMESERVER}
+  simple-consumer:
     endpoints: ${ROCKET_MQ_NAMESERVER}
