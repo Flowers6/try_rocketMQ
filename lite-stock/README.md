@@ -116,7 +116,7 @@ POST /order/create
 - [x] 创建订单明细
 - [x] 冻结库存
 - [x] 记录库存流水
-- [ ] 发送 RocketMQ 延迟消息
+- [x] 发送 RocketMQ 延迟消息
 
 ---
 
@@ -143,15 +143,15 @@ POST /order/pay/{orderId}
 
 实现：
 
-- [ ] 下单发送延迟消息
-- [ ] 构建消息 DTO
+- [x] 下单发送延迟消息
+- [x] 构建消息 DTO
 - [ ] 序列化消息
 
 ---
 
 ## Topic 规划
 
-- [ ] 创建 order-timeout-topic
+- [x] 创建 order-timeout-topic
 
 ---
 
@@ -159,8 +159,8 @@ POST /order/pay/{orderId}
 
 实现：
 
-- [ ] 30分钟超时检查
-- [ ] RocketMQ 延迟等级配置
+- [x] 30分钟超时检查
+- [x] RocketMQ 延迟等级配置 MQ 5v 版本已没有延迟等级可自定义延迟时间
 
 ---
 

@@ -6,6 +6,7 @@ import com.chance.litestock.domain.dao.TOrder;
 import com.chance.litestock.domain.dao.TOrderItem;
 import com.chance.litestock.domain.dto.CreateOrder;
 import com.chance.litestock.domain.dto.CreateOrderItem;
+import com.chance.litestock.domain.dto.OrderTimeoutMessage;
 import com.chance.litestock.enums.OrderStatusEnum;
 import com.chance.litestock.mapper.TOrderItemMapper;
 import com.chance.litestock.service.TOrderService;
@@ -14,12 +15,12 @@ import com.chance.litestock.service.TProductService;
 import lombok.RequiredArgsConstructor;
 import org.apache.rocketmq.client.apis.producer.SendReceipt;
 import org.apache.rocketmq.client.core.RocketMQClientTemplate;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -59,18 +60,20 @@ public class TOrderServiceImpl extends ServiceImpl<TOrderMapper, TOrder>
         });
 
         // 发送延迟消息
-        sendCreateOrderMsg(tOrder.getId());
+        sendCreateOrderMsg(tOrder.getId(), tOrder.getOrderNo());
     }
 
     /**
      * 发送延迟消息
+     *
      * @param orderId 订单ID
+     * @param orderNo 订单号
      */
-    private void sendCreateOrderMsg(Long orderId) {
+    private void sendCreateOrderMsg(Long orderId, String orderNo) {
         CompletableFuture<SendReceipt> sendFuture = new CompletableFuture<>();
         rocketMQClientTemplate.asyncSendDelayMessage(ORDER_TIMEOUT_TOPIC,
-                String.valueOf(orderId),
-                Duration.of(ORDER_TIMEOUT_DELAY, ChronoUnit.MILLIS),
+                MessageBuilder.withPayload(OrderTimeoutMessage.build(orderId, orderNo)),
+                Duration.ofMillis(ORDER_TIMEOUT_DELAY),
                 sendFuture);
     }
 
