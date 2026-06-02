@@ -54,6 +54,7 @@ logstash:
 
 rocketmq:
   producer:
-    endpoints: ${ROCKET_MQ_NAMESERVER}
-  simple-consumer:
-    endpoints: ${ROCKET_MQ_NAMESERVER}
+    endpoints: ${ROCKET_MQ_NAMESERVER:127.0.0.1:8081}
+  push-consumer:
+    endpoints: ${ROCKET_MQ_NAMESERVER:127.0.0.1:8081}
+    tag: "*"
