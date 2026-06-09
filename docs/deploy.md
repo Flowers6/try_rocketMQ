@@ -154,7 +154,7 @@ call mqadmin.cmd updateTopic ^
 -n 127.0.0.1:9876 ^
 -c DefaultCluster ^
 -a +message.type=DELAY ^
--t %%T
+-t delay-order-topic
 
 echo Topic 创建完成
 echo.
