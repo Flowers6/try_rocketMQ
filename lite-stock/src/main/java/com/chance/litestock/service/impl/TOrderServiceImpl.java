@@ -1,5 +1,6 @@
 package com.chance.litestock.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.chance.litestock.domain.dao.TOrder;
@@ -13,6 +14,7 @@ import com.chance.litestock.service.TOrderService;
 import com.chance.litestock.mapper.TOrderMapper;
 import com.chance.litestock.service.TProductService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.client.apis.producer.SendReceipt;
 import org.apache.rocketmq.client.core.RocketMQClientTemplate;
 import org.springframework.messaging.support.MessageBuilder;
@@ -24,8 +26,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import static com.chance.litestock.consts.MQConst.ORDER_TIMEOUT_DELAY;
-import static com.chance.litestock.consts.MQConst.ORDER_TOPIC;
+import static com.chance.litestock.consts.MQConst.*;
 
 /**
 * @author 32166
@@ -34,6 +35,7 @@ import static com.chance.litestock.consts.MQConst.ORDER_TOPIC;
 */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TOrderServiceImpl extends ServiceImpl<TOrderMapper, TOrder>
     implements TOrderService{
 
@@ -70,11 +72,31 @@ public class TOrderServiceImpl extends ServiceImpl<TOrderMapper, TOrder>
      * @param orderNo 订单号
      */
     private void sendCreateOrderMsg(Long orderId, String orderNo) {
-        CompletableFuture<SendReceipt> sendFuture = new CompletableFuture<>();
-        rocketMQClientTemplate.asyncSendDelayMessage(ORDER_TOPIC,
-                MessageBuilder.withPayload(OrderTimeoutMessage.build(orderId, orderNo)),
-                Duration.ofMillis(ORDER_TIMEOUT_DELAY),
-                sendFuture);
+        try {
+            OrderTimeoutMessage message = OrderTimeoutMessage.build(orderId, orderNo);
+            String destination = String.join(StrUtil.COLON, DELAY_ORDER_TOPIC, ORDER_TIMEOUT_TAG);
+
+            CompletableFuture<SendReceipt> sendFuture = new CompletableFuture<>();
+            rocketMQClientTemplate.asyncSendDelayMessage(
+                    destination,
+                    MessageBuilder.withPayload(message).build(),
+                    Duration.ofMillis(ORDER_TIMEOUT_DELAY),
+                    sendFuture
+            );
+
+            sendFuture.whenComplete((receipt, throwable) -> {
+                if (throwable != null) {
+                    log.error("延迟消息发送失败, orderId: {}, orderNo: {}", orderId, orderNo, throwable);
+                } else {
+                    log.info("延迟消息发送成功, orderId: {}, orderNo: {}, messageId: {}",
+                            orderId, orderNo, receipt.getMessageId());
+                }
+            });
+
+        } catch (Exception e) {
+            log.error("延迟消息发送异常, orderId: {}, orderNo: {}", orderId, orderNo, e);
+            throw new RuntimeException("延迟消息发送失败", e);
+        }
     }
 
     @Override

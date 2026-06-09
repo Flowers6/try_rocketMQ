@@ -32,7 +32,7 @@ import static com.chance.litestock.consts.MQConst.*;
  * @time : 15:58
  */
 @Component
-@RocketMQMessageListener(topic = ORDER_TOPIC, consumerGroup = ORDER_TIMEOUT_CONSUMER, tag = ORDER_TIMEOUT_TAG)
+@RocketMQMessageListener(topic = DELAY_ORDER_TOPIC, consumerGroup = ORDER_TIMEOUT_CONSUMER, tag = ORDER_TIMEOUT_TAG)
 @Slf4j
 @RequiredArgsConstructor
 public class OrderTimeoutConsumer implements RocketMQListener {
@@ -48,9 +48,14 @@ public class OrderTimeoutConsumer implements RocketMQListener {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ConsumeResult consume(MessageView messageView) {
+        log.info("收到订单超时消息, messageId: {}, topic: {}, tag: {}",
+                messageView.getMessageId().toString(),
+                messageView.getTopic(),
+                messageView.getTag().orElse("null"));
         try {
             // 解析消息
             OrderTimeoutMessage message = parseMessage(messageView);
+            log.info("解析消息成功, orderId: {}, orderNo: {}", message.getOrderId(), message.getOrderNo());
 
             // 查询订单状态
             validateOrderStatus(message.getOrderId());
@@ -60,6 +65,7 @@ public class OrderTimeoutConsumer implements RocketMQListener {
 
             // 释放库存，记录库存流水
             releaseStock(message.getOrderId());
+            log.info("订单超时处理完成, orderId: {}", message.getOrderId());
         } catch (BaseException e) {
             log.error("OrderTimeoutConsumer#consume业务异常无需重试", e);
             return ConsumeResult.SUCCESS;
@@ -78,7 +84,9 @@ public class OrderTimeoutConsumer implements RocketMQListener {
      */
     private OrderTimeoutMessage parseMessage(MessageView messageView) {
         try {
-            String body = new String(messageView.getBody().array(), StandardCharsets.UTF_8);
+            byte[] bodyBytes = new byte[messageView.getBody().remaining()];
+            messageView.getBody().get(bodyBytes);
+            String body = new String(bodyBytes, StandardCharsets.UTF_8);
             return objectMapper.readValue(body, OrderTimeoutMessage.class);
         } catch (Exception e) {
             log.error("解析订单超时消息失败", e);

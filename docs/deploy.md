@@ -140,27 +140,24 @@ echo Broker 已启动
 echo.
 
 REM ==================================================
-REM 创建 Topic
-REM ==================================================
-echo 创建业务 Topic...
-
-for %%T in (
-    order-topic
-) do (
-    call mqadmin.cmd updateTopic ^
-    -n 127.0.0.1:9876 ^
-    -c DefaultCluster ^
-    -t %%T >nul 2>&1
-)
-
-echo Topic 创建完成
-echo.
-
-REM ==================================================
 REM 3. 额外等待 Broker 注册完成
 REM ==================================================
 echo 等待 Broker 注册到 NameServer...
 timeout /t 10 >nul
+
+REM ==================================================
+REM 创建 Topic
+REM ==================================================
+echo 创建业务 Topic...
+
+call mqadmin.cmd updateTopic ^
+-n 127.0.0.1:9876 ^
+-c DefaultCluster ^
+-a +message.type=DELAY ^
+-t %%T
+
+echo Topic 创建完成
+echo.
 
 REM ==================================================
 REM 4. 启动 Proxy

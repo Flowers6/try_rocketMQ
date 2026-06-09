@@ -10,7 +10,7 @@ package com.chance.litestock.consts;
 public final class MQConst {
 
     // ====================================== topic ======================================
-    public static final String ORDER_TOPIC = "order-topic";
+    public static final String DELAY_ORDER_TOPIC = "delay-order-topic";
     // ====================================== topic ======================================
 
     // ====================================== consumer-group ======================================
@@ -20,7 +20,8 @@ public final class MQConst {
     // ====================================== tag ======================================
     public static final String ORDER_TIMEOUT_TAG = "order-timeout-tag";
 
-    public static final long ORDER_TIMEOUT_DELAY = 30 * 60 * 1000;
+//    public static final long ORDER_TIMEOUT_DELAY = 30 * 60 * 1000;
+    public static final long ORDER_TIMEOUT_DELAY = 5 * 1000;
     // ====================================== tag ======================================
 
     // ====================================== await-duration ======================================
