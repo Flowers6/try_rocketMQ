@@ -140,6 +140,19 @@ echo Broker 已启动
 echo.
 
 REM ==================================================
+REM 创建业务 Topic
+REM ==================================================
+echo 创建 Topic...
+
+mqadmin.cmd updateTopic ^
+-n 127.0.0.1:9876 ^
+-c DefaultCluster ^
+-t order-topic
+
+echo Topic 创建完成
+echo.
+
+REM ==================================================
 REM 3. 额外等待 Broker 注册完成
 REM ==================================================
 echo 等待 Broker 注册到 NameServer...

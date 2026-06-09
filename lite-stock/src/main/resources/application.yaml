@@ -54,6 +54,7 @@ logstash:
 
 rocketmq:
   producer:
+    # 实际上 ROCKET_MQ_NAMESERVER 填的是 proxy 地址这个地方命名不规范
     endpoints: ${ROCKET_MQ_NAMESERVER:127.0.0.1:8081}
   push-consumer:
     endpoints: ${ROCKET_MQ_NAMESERVER:127.0.0.1:8081}
