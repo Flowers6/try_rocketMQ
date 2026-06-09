@@ -140,14 +140,18 @@ echo Broker 已启动
 echo.
 
 REM ==================================================
-REM 创建业务 Topic
+REM 创建 Topic
 REM ==================================================
-echo 创建 Topic...
+echo 创建业务 Topic...
 
-mqadmin.cmd updateTopic ^
--n 127.0.0.1:9876 ^
--c DefaultCluster ^
--t order-topic
+for %%T in (
+    order-topic
+) do (
+    call mqadmin.cmd updateTopic ^
+    -n 127.0.0.1:9876 ^
+    -c DefaultCluster ^
+    -t %%T >nul 2>&1
+)
 
 echo Topic 创建完成
 echo.
